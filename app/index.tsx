@@ -1,15 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { STORAGE_KEY } from "@/constants/key";
+import type { TodoListItem } from "@/constants/types";
 
-const STORAGE_KEY = "@todos";
-type TodoListItem = {
-	id: number;
-	title: string;
-	description: string;
-	completed: boolean;
-};
 export default function Index() {
 	const [todos, setTodos] = useState<TodoListItem[]>([]);
 
@@ -43,8 +38,10 @@ export default function Index() {
 			console.error("Failed to save todos", err);
 		}
 	};
+
+	const router = useRouter();
 	return (
-		<SafeAreaView className="h-full w-full gap-4 bg-neutral-700 px-2">
+		<View className="flex-1 gap-4 bg-neutral-800">
 			<Pressable
 				onPress={() => {
 					const newTodo = {
@@ -107,10 +104,23 @@ export default function Index() {
 						>
 							<Text className="text-sm">Toggle Completion</Text>
 						</Pressable>
+						<Pressable
+							onPress={() => {
+								router.navigate({
+									pathname: "/todos/[id]",
+									params: {
+										id: item.id,
+									},
+								});
+							}}
+							className="mt-4 self-start rounded-full bg-green-500 px-4 py-2 text-white"
+						>
+							<Text className="text-sm">Go to Todo Item</Text>
+						</Pressable>
 					</View>
 				)}
 				showsVerticalScrollIndicator={false}
 			/>
-		</SafeAreaView>
+		</View>
 	);
 }
